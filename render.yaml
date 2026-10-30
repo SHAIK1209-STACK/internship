@@ -1,0 +1,47 @@
+services:
+  # 1. Backend Web Service
+  - type: web
+    name: darshanease-backend
+    env: node
+    buildCommand: npm install --prefix backend
+    startCommand: node backend/server.js
+    plan: free
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 5000
+      - key: MONGO_URI
+        sync: false # User will provide this in Render dashboard
+      - key: JWT_SECRET
+        generateValue: true # Render will auto-generate a secure key
+      - key: SMTP_HOST
+        value: smtp.gmail.com
+      - key: SMTP_PORT
+        value: "587"
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASSWORD
+        sync: false
+      - key: SMTP_FROM
+        sync: false
+      - key: EMAIL_USER
+        sync: false
+      - key: EMAIL_PASS
+        sync: false
+      - key: RESEND_API_KEY
+        sync: false
+
+  # 2. Frontend Static Site
+  - type: static
+    name: darshanease-frontend
+    buildCommand: npm install --prefix frontend && npm run build --prefix frontend
+    publishPath: frontend/dist
+    plan: free
+    envVars:
+      - key: VITE_API_URL
+        value: https://darshan-2-sap7.onrender.com
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
